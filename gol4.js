@@ -4,15 +4,19 @@ $(document).ready(function() {
   canvas = document.getElementById('board');
   ctx = canvas.getContext('2d');
 
-  width = 200;
-  height = 200;
+  width = 400;
+  height = 400;
+  scale_x = 2;
+  scale_y = 2;
+  offset_x = -150;
+  offset_y = -150;
 
   update_board_size(width, height);
 
-  speed = 0.1; // updates per second
+  speed = 1.0; // updates per second
   lifetime = 5; // updates before death
   total_updates = 0;
-  max_world_length = 1000;
+  max_world_length = 2000;
   shift_sequence = false;
 
   interval = false;
@@ -23,6 +27,7 @@ $(document).ready(function() {
   place_initial_lifeform();
 
   $("#start").click(function() {
+    speed = $("#speed").val();
     place_initial_lifeform();
     parsed_sequence = parse_sequence_into_game_logic();
 
@@ -40,7 +45,25 @@ $(document).ready(function() {
     }
   });
 
-  $("#reset").click(reset_board);
+  $("#reset").click(function() {
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    for (var i=0; i<world.length; i++) {
+      var x = world[i].x;
+      var y = world[i].y;
+
+      ctx.fillStyle = "rgba(255, 255, 255, 1)";
+      ctx.fillRect(x, y, 1, 1);
+    }
+
+    world = [];
+
+    total_updates = 0;
+
+    place_initial_lifeform();
+  });
 });
 
 function update_board_size(w, h) {
@@ -52,8 +75,8 @@ function update_board_size(w, h) {
   $("#board").css("width", "" + w + "px");
   $("#board").css("height", "" + h + "px");
 
-  ctx.scale(4, 4);
-  ctx.translate(-75, -75)
+  ctx.scale(scale_x, scale_y);
+  ctx.translate(offset_x, offset_y)
 }
 
 var world = [];
@@ -117,7 +140,7 @@ function gameloop() {
     // age the pixel
     p.life -= 1;
 
-    if (p.life == 0) {
+    if (p.life <= 0) {
       dead.push(p);
       continue;
     }
@@ -243,6 +266,8 @@ function reset_board() {
   world = [];
 
   total_updates = 0;
+
+  place_initial_lifeform();
 }
 
 function neighbor(x, y) {

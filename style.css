@@ -27,3 +27,15 @@ html, body {
   padding: 0;
   border: 1px solid grey;
 }
+
+#sequence-alert {
+  display: none;
+}
+
+#title {
+  font-size: 32px;
+}
+
+#sub-title {
+  font-size: 24px;
+}
